@@ -1,5 +1,9 @@
 package com.danier.flink.study.model.cep;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 
 /**
@@ -8,47 +12,20 @@ import java.io.Serializable;
  * @CopyRight : DataTeam @ MGTV Inc
  * @Desc:
  */
+@Setter
+@Getter
+@ToString
 public class LoginEventVo implements Serializable {
+
     private String userId;
     private String ip;
     private String type;
+    private Long timestamp;
 
-    public LoginEventVo(String userId, String ip, String type) {
+    public LoginEventVo(String userId, String ip, String type, Long timestamp) {
         this.userId = userId;
         this.ip = ip;
         this.type = type;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return "{\"_class\":\"LoginEventVo\", " +
-                "\"userId\":" + (userId == null ? "null" : "\"" + userId + "\"") + ", " +
-                "\"ip\":" + (ip == null ? "null" : "\"" + ip + "\"") + ", " +
-                "\"type\":" + (type == null ? "null" : "\"" + type + "\"") +
-                "}";
+        this.timestamp = timestamp;
     }
 }

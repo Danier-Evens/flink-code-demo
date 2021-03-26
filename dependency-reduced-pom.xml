@@ -148,6 +148,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>${java.version}</maven.compiler.target>
+    <fast.json.version>1.2.67.sec10</fast.json.version>
     <lombok.version>1.16.18</lombok.version>
   </properties>
 </project>

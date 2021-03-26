@@ -14,6 +14,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,13 +36,13 @@ public class LoginCEPFail {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         DataStream<LoginEventVo> loginEventStream = env.fromCollection(Arrays.asList(
-                new LoginEventVo("1", "192.168.0.1", "fail"),
-                new LoginEventVo("1", "192.168.0.2", "fail"),
-                new LoginEventVo("1", "192.168.0.3", "fail"),
-                new LoginEventVo("1", "192.168.0.4", "fail"),
-                new LoginEventVo("2", "192.168.10.10", "fail"),
-                new LoginEventVo("2", "192.168.10.10", "fail"),
-                new LoginEventVo("2", "192.168.10.10", "success")
+                new LoginEventVo("1", "192.168.0.1", "fail", System.currentTimeMillis()),
+                new LoginEventVo("1", "192.168.0.2", "fail", System.currentTimeMillis()),
+                new LoginEventVo("1", "192.168.0.3", "fail", System.currentTimeMillis()),
+                new LoginEventVo("1", "192.168.0.4", "fail", System.currentTimeMillis()),
+                new LoginEventVo("2", "192.168.10.10", "fail", System.currentTimeMillis()),
+                new LoginEventVo("2", "192.168.10.10", "fail", System.currentTimeMillis()),
+                new LoginEventVo("2", "192.168.10.10", "success", System.currentTimeMillis())
         ));
 
         Pattern<LoginEventVo, LoginEventVo> loginFailPattern = Pattern.<LoginEventVo>
