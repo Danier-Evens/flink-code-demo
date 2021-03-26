@@ -1,7 +1,7 @@
 package com.danier.flink.study.stream;
 
 import com.alibaba.fastjson.JSONObject;
-import com.danier.flink.study.model.cep.LoginEventVo;
+import com.danier.flink.study.model.LoginEventVo;
 import com.danier.flink.study.stream.function.TimeDeltaFunction;
 import com.danier.flink.study.stream.function.agg.CountAggFunction;
 import com.danier.flink.study.stream.process.GlobalWindowProcessFunction;
@@ -53,7 +53,7 @@ public class SlidingWindowEnhancement {
         SingleOutputStreamOperator<Long> aggregate = env.addSource(kafkaSource)
                 .setParallelism(parallelism)
                 .map((msg) -> JSONObject.parseObject(msg, LoginEventVo.class))
-                .assignTimestampsAndWatermarks(new LoginBoundedOutOfOrderness())
+                .assignTimestampsAndWatermarks(new LoginBoundedOutOfOrderness<LoginEventVo>())
                 .keyBy(LoginEventVo::getUserId)
                 .window(GlobalWindows.create())
                 // 窗口触发计算前，进行剔除不满足时间范围的事件。

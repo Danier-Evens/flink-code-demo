@@ -12,7 +12,7 @@ class Task():
 
     def producer(self):
         timestamp = (int(round(time.time() * 1000)))
-        msg = '{"userId":"test_user_id", "ip":"127.0.0.1", "type":"sucess", "timestamp":%d}'%(timestamp)
+        msg = '{"ruleId":1, "userId":"test_user_id", "ip":"127.0.0.1", "type":"sucess", "timestamp":%d}'%(t)
         key = str(uuid.uuid1())
         future = producer.send(topic, key=key.encode('utf-8'), value=msg.encode('utf-8'))
         future.get(timeout=10)

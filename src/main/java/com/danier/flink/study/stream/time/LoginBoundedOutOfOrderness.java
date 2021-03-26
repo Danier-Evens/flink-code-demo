@@ -1,6 +1,6 @@
 package com.danier.flink.study.stream.time;
 
-import com.danier.flink.study.model.cep.LoginEventVo;
+import com.danier.flink.study.model.ExtractTimeVo;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
 
@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @CopyRight : coding @ Civil Private Organization Inc
  * @Desc:
  */
-public class LoginBoundedOutOfOrderness extends BoundedOutOfOrdernessTimestampExtractor<LoginEventVo> implements Serializable {
+public class LoginBoundedOutOfOrderness<T> extends BoundedOutOfOrdernessTimestampExtractor<T> implements Serializable {
 
     /**
      * @param maxOutOfOrderness 最大允许乱序时间 单位ms
@@ -26,7 +26,11 @@ public class LoginBoundedOutOfOrderness extends BoundedOutOfOrdernessTimestampEx
     }
 
     @Override
-    public long extractTimestamp(LoginEventVo loginEventVo) {
-        return loginEventVo.getTimestamp();
+    public long extractTimestamp(T extractTime) {
+        if (extractTime instanceof ExtractTimeVo) {
+            return ((ExtractTimeVo) extractTime).extractTimestamp();
+        } else {
+            return Long.MIN_VALUE;
+        }
     }
 }

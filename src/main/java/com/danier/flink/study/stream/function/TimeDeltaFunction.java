@@ -1,6 +1,6 @@
 package com.danier.flink.study.stream.function;
 
-import com.danier.flink.study.model.cep.LoginEventVo;
+import com.danier.flink.study.model.ExtractTimeVo;
 import org.apache.flink.streaming.api.functions.windowing.delta.DeltaFunction;
 
 /**
@@ -9,10 +9,11 @@ import org.apache.flink.streaming.api.functions.windowing.delta.DeltaFunction;
  * @CopyRight : coding @ Civil Private Organization Inc
  * @Desc:
  */
-public class TimeDeltaFunction implements DeltaFunction<LoginEventVo> {
+public class TimeDeltaFunction<T> implements DeltaFunction<T> {
 
     @Override
-    public double getDelta(LoginEventVo oldDataPoint, LoginEventVo newDataPoint) {
-        return (double) newDataPoint.getTimestamp() - (double) oldDataPoint.getTimestamp();
+    public double getDelta(T oldDataPoint, T newDataPoint) {
+        return (double) ((ExtractTimeVo) newDataPoint).extractTimestamp() -
+                (double) ((ExtractTimeVo) oldDataPoint).extractTimestamp();
     }
 }

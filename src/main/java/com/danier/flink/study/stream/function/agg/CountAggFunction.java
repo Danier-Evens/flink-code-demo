@@ -1,6 +1,5 @@
 package com.danier.flink.study.stream.function.agg;
 
-import com.danier.flink.study.model.cep.LoginEventVo;
 import org.apache.flink.api.common.functions.AggregateFunction;
 
 /**
@@ -9,7 +8,7 @@ import org.apache.flink.api.common.functions.AggregateFunction;
  * @CopyRight : coding @ Civil Private Organization Inc
  * @Desc: 求总数
  */
-public class CountAggFunction implements AggregateFunction<LoginEventVo, Long, Long> {
+public class CountAggFunction<T> implements AggregateFunction<T, Long, Long> {
 
     @Override
     public Long createAccumulator() {
@@ -17,7 +16,7 @@ public class CountAggFunction implements AggregateFunction<LoginEventVo, Long, L
     }
 
     @Override
-    public Long add(LoginEventVo value, Long accumulator) {
+    public Long add(T value, Long accumulator) {
         return accumulator + 1;
     }
 
