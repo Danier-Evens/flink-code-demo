@@ -48,6 +48,10 @@ public class BroadcastStreamApp {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
+        int parallelism = params.getInt("parallelism", 1);
+        env.setParallelism(parallelism);
+
+
         Time windowSize = Time.seconds(5l); // 窗口大小
         Time windowSlide = Time.seconds(1l); // 窗口滑动步长
 
@@ -78,12 +82,11 @@ public class BroadcastStreamApp {
     }
 
     /**
-     * @param env    环境
+     * @param env 环境
      * @return kafka source stream
      */
     private static final SingleOutputStreamOperator<LoginEventVo> getKafkaStream(StreamExecutionEnvironment env) {
         String topic = params.get("topic");
-        int parallelism = params.getInt("parallelism", 1);
         Properties kafkaP = new Properties();
         kafkaP.setProperty("group.id", params.get("group.id", jobName));
         kafkaP.setProperty("bootstrap.servers", params.get("bootstrap.servers", "127.0.0.1:9092"));
@@ -91,7 +94,6 @@ public class BroadcastStreamApp {
         SingleOutputStreamOperator<LoginEventVo> stream = env.addSource(kafkaSource)
                 .uid("kafka_" + jobName)
                 .name("kafka_" + jobName)
-                .setParallelism(parallelism)
                 .map((msg) -> JSONObject.parseObject(msg, LoginEventVo.class))
                 .assignTimestampsAndWatermarks(new LoginBoundedOutOfOrderness());
         return stream;
@@ -124,7 +126,6 @@ public class BroadcastStreamApp {
      */
     private static final SingleOutputStreamOperator<LoginEventWithRuleVo> connectStream(SingleOutputStreamOperator<LoginEventVo> kafkaStream,
                                                                                         BroadcastStream<Map<Integer, RuleVo>> broadcastRuleStream) {
-        int parallelism = params.getInt("parallelism", 1);
         // 事件流和广播的配置流连接，形成BroadcastConnectedStream
         BroadcastConnectedStream<LoginEventVo, Map<Integer, RuleVo>> connectedStream = kafkaStream.connect(broadcastRuleStream);
 
@@ -132,8 +133,7 @@ public class BroadcastStreamApp {
         SingleOutputStreamOperator<LoginEventWithRuleVo> kafkaConnectRuleStream =
                 connectedStream.process(new RuleBroadcastProcessFunction())
                         .filter(r -> r != null)
-                        .assignTimestampsAndWatermarks(new LoginBoundedOutOfOrderness())
-                        .setParallelism(parallelism);
+                        .assignTimestampsAndWatermarks(new LoginBoundedOutOfOrderness());
         return kafkaConnectRuleStream;
     }
 }
