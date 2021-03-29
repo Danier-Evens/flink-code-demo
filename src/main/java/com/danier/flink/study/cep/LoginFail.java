@@ -21,26 +21,29 @@ import java.util.stream.Collectors;
  * @Date 2020/11/24 11:03
  * @Author danier[danierwei@gmail.com]
  * @CopyRight : coding @ Civil Private Organization Inc
- * @Desc: 检测用户登录失败次数连续超过3次的用户，并将登录失败的ip进行输出。
- * 运行： bin/flink run -c com.danier.flink.study.cep.LoginCEPFail ~/work/code/study/flink-code-demo/target/flink-code-demo-0.1.jar
+ * @Desc: 检测用户登录失败次数超过3次的用户(严格连续)，并将登录失败的ip进行输出。
+ * 运行： bin/flink run -c com.danier.flink.study.cep.LoginFail ~/work/code/study/flink-code-demo/target/flink-code-demo-0.1.jar
  * 输出：
  * 2> 192.168.0.1 -> 192.168.0.2 -> 192.168.0.3
  * 2> 192.168.0.2 -> 192.168.0.3 -> 192.168.0.4
  */
 @Slf4j
-public class LoginCEPFail {
+public class LoginFail {
+
+    private static final String jobName = LoginFail.class.getSimpleName();
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         DataStream<LoginEventVo> loginEventStream = env.fromCollection(Arrays.asList(
-                new LoginEventVo("1", "192.168.0.1", "fail", System.currentTimeMillis()),
-                new LoginEventVo("1", "192.168.0.2", "fail", System.currentTimeMillis()),
-                new LoginEventVo("1", "192.168.0.3", "fail", System.currentTimeMillis()),
-                new LoginEventVo("1", "192.168.0.4", "fail", System.currentTimeMillis()),
-                new LoginEventVo("2", "192.168.10.10", "fail", System.currentTimeMillis()),
-                new LoginEventVo("2", "192.168.10.10", "fail", System.currentTimeMillis()),
-                new LoginEventVo("2", "192.168.10.10", "success", System.currentTimeMillis())
+                LoginEventVo.build().buildUserId("1").buildIp("192.168.0.1").buildType("fail"),
+                LoginEventVo.build().buildUserId("1").buildIp("192.168.0.1").buildType("success"),
+                LoginEventVo.build().buildUserId("1").buildIp("192.168.0.2").buildType("fail"),
+                LoginEventVo.build().buildUserId("1").buildIp("192.168.0.3").buildType("fail"),
+                LoginEventVo.build().buildUserId("1").buildIp("192.168.0.4").buildType("fail"),
+                LoginEventVo.build().buildUserId("2").buildIp("192.168.10.10").buildType("fail"),
+                LoginEventVo.build().buildUserId("2").buildIp("192.168.10.10").buildType("fail"),
+                LoginEventVo.build().buildUserId("2").buildIp("192.168.10.10").buildType("success")
         ));
 
         Pattern<LoginEventVo, LoginEventVo> loginFailPattern = Pattern.<LoginEventVo>
@@ -70,6 +73,6 @@ public class LoginCEPFail {
 
         resultStream.print();
 
-        env.execute();
+        env.execute(jobName);
     }
 }

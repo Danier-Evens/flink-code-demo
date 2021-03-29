@@ -6,6 +6,7 @@ import com.danier.flink.study.model.LoginEventWithRuleVo;
 import com.danier.flink.study.model.RuleVo;
 import com.danier.flink.study.model.enums.AggregateTypeEnum;
 import com.danier.flink.study.stream.function.TimeDeltaFunction;
+import com.danier.flink.study.stream.function.agg.BitMapDistinctAggFunction;
 import com.danier.flink.study.stream.function.agg.CountAggFunction;
 import com.danier.flink.study.stream.function.process.RuleBroadcastProcessFunction;
 import com.danier.flink.study.stream.process.GlobalWindowProcessFunction;
@@ -59,10 +60,10 @@ public class BroadcastStreamApp {
         BroadcastStream<Map<Integer, RuleVo>> ruleBroadcastStream = getRuleBroadcastStream(env);
         SingleOutputStreamOperator<LoginEventWithRuleVo> connectStream = connectStream(kafkaStream, ruleBroadcastStream);
 
-
+        // count算子
         SingleOutputStreamOperator countAggregate = connectStream.filter(r -> r.getRule() != null
                 && AggregateTypeEnum.COUNT.equals(r.getRule().getAggregateType()))
-                .keyBy(r -> r.getEvent().getUserId())
+                .keyBy(r -> r.dimension())
                 .window(GlobalWindows.create())
                 // 窗口触发计算前，进行剔除不满足时间范围的事件。
                 .evictor(TimeEvictor.of(windowSize))
@@ -74,9 +75,22 @@ public class BroadcastStreamApp {
                 .aggregate(new CountAggFunction(), new GlobalWindowProcessFunction());
         countAggregate.print();
 
-        // fixme 其他算子有需要可以跟count算子类似实现方式。并count算子中的，keyBy按照userId仅为了演示，有需要另外再实现按那种维度进行聚合。
+        // 去重算子
+        SingleOutputStreamOperator distinctAggregate = connectStream.filter(r -> r.getRule() != null
+                && AggregateTypeEnum.DISTINCT.equals(r.getRule().getAggregateType()))
+                .keyBy(r -> r.dimension())
+                .window(GlobalWindows.create())
+                // 窗口触发计算前，进行剔除不满足时间范围的事件。
+                .evictor(TimeEvictor.of(windowSize))
+                // 触发器：按照windowSlide大小进行触发，计算方式为与上一次触发元素比较，计算时间差，判断是否大于windowSlide。
+                .trigger(
+                        DeltaTrigger.of(windowSlide.getUnit().toSeconds(windowSlide.getSize()),
+                                new TimeDeltaFunction(),
+                                TypeInformation.of(LoginEventWithRuleVo.class).createSerializer(env.getConfig())))
+                .aggregate(new BitMapDistinctAggFunction(), new GlobalWindowProcessFunction());
+        distinctAggregate.print();
 
-
+        // fixme 其他算子有需要可以跟count、dinstinct算子类似实现方式。。
         // 执行
         env.execute(jobName);
     }
@@ -94,7 +108,15 @@ public class BroadcastStreamApp {
         SingleOutputStreamOperator<LoginEventVo> stream = env.addSource(kafkaSource)
                 .uid("kafka_" + jobName)
                 .name("kafka_" + jobName)
-                .map((msg) -> JSONObject.parseObject(msg, LoginEventVo.class))
+                .map((msg) -> {
+                    JSONObject json = JSONObject.parseObject(msg);
+                    return LoginEventVo.build()
+                            .buildUserId(json.getString("userId"))
+                            .buildIp(json.getString("ip"))
+                            .buildType(json.getString("type"))
+                            .buildTimestamp(json.getLong("timestamp"))
+                            .buildRuleId(json.getInteger("ruleId"));
+                })
                 .assignTimestampsAndWatermarks(new LoginBoundedOutOfOrderness());
         return stream;
     }

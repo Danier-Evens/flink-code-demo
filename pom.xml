@@ -32,11 +32,12 @@ under the License.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <flink.version>1.8.0</flink.version>
         <java.version>1.8</java.version>
-        <lombok.version>1.16.18</lombok.version>
         <druid.version>1.2.4</druid.version>
+        <bitmap.version>0.8.0</bitmap.version>
+        <lombok.version>1.16.18</lombok.version>
         <spring.version>4.3.14.RELEASE</spring.version>
-        <fast.json.version>1.2.67.sec10</fast.json.version>
         <scala.binary.version>2.11</scala.binary.version>
+        <fast.json.version>1.2.67.sec10</fast.json.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mysql.connector.java.version>5.1.26</mysql.connector.java.version>
@@ -96,6 +97,12 @@ under the License.
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>${fast.json.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.roaringbitmap</groupId>
+            <artifactId>RoaringBitmap</artifactId>
+            <version>${bitmap.version}</version>
         </dependency>
 
         <dependency>

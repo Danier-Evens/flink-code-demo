@@ -79,9 +79,13 @@ public class RuleSource extends RichSourceFunction<Map<Integer, RuleVo>> {
 //        log.info("##### open and init rule mysql connection poll {}.....", config);
     }
 
+    /**
+     * @return 测试规则
+     */
     public Map<Integer, RuleVo> getTestRules() {
-        RuleVo countR = new RuleVo(1, AggregateTypeEnum.COUNT);
-        RuleVo distinctR = new RuleVo(2, AggregateTypeEnum.DISTINCT);
+        String[] dim = {"userId"};
+        RuleVo countR = new RuleVo(1, null, dim, AggregateTypeEnum.COUNT);
+        RuleVo distinctR = new RuleVo(2, "ip", dim, AggregateTypeEnum.DISTINCT);
         Map<Integer, RuleVo> r = new HashMap<>(2);
         r.put(countR.getRuleId(), countR);
         r.put(distinctR.getRuleId(), distinctR);

@@ -151,6 +151,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <scala.binary.version>2.11</scala.binary.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <bitmap.version>0.8.0</bitmap.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <spring.version>4.3.14.RELEASE</spring.version>
   </properties>

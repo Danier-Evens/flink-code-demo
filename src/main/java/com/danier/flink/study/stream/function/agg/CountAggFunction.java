@@ -1,5 +1,6 @@
 package com.danier.flink.study.stream.function.agg;
 
+import com.danier.flink.study.model.AbstractBasicVo;
 import org.apache.flink.api.common.functions.AggregateFunction;
 
 /**
@@ -8,7 +9,7 @@ import org.apache.flink.api.common.functions.AggregateFunction;
  * @CopyRight : coding @ Civil Private Organization Inc
  * @Desc: 求总数
  */
-public class CountAggFunction<T> implements AggregateFunction<T, Long, Long> {
+public class CountAggFunction<T extends AbstractBasicVo> implements AggregateFunction<T, Long, Long> {
 
     @Override
     public Long createAccumulator() {

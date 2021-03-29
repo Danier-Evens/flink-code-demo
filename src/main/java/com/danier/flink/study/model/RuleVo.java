@@ -19,5 +19,10 @@ import java.io.Serializable;
 public class RuleVo implements Serializable {
 
     private int ruleId;
+    // 度量字段
+    private String measureField;
+    // 维度字段
+    private String[] dimensionFields;
+    // 聚合类型
     private AggregateTypeEnum aggregateType;
 }

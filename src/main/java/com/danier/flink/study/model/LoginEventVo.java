@@ -16,8 +16,7 @@ import java.io.Serializable;
 @Setter
 @Getter
 @ToString
-@NoArgsConstructor
-public class LoginEventVo extends ExtractTimeVo implements Serializable {
+public class LoginEventVo extends AbstractBasicVo implements Serializable {
 
     private String userId;
     private String ip;
@@ -25,16 +24,39 @@ public class LoginEventVo extends ExtractTimeVo implements Serializable {
     private Long timestamp;
     private Integer ruleId;
 
-    public LoginEventVo(String userId, String ip, String type, Long timestamp) {
-        new LoginEventVo(userId, ip, type, timestamp, null);
+    public LoginEventVo buildUserId(String userId) {
+        this.userId = userId;
+        return this;
     }
 
-    public LoginEventVo(String userId, String ip, String type, Long timestamp, Integer ruleId) {
-        this.userId = userId;
+    public LoginEventVo buildIp(String ip) {
         this.ip = ip;
+        return this;
+    }
+
+    public LoginEventVo buildType(String type) {
         this.type = type;
+        return this;
+    }
+
+    public LoginEventVo buildTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+        return this;
+    }
+
+    public LoginEventVo buildRuleId(Integer ruleId) {
         this.ruleId = ruleId;
+        return this;
+    }
+
+
+    public static LoginEventVo build() {
+        return new LoginEventVo();
+    }
+
+
+    private LoginEventVo() {
+
     }
 
     @Override
